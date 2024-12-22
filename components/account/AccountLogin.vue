@@ -1,4 +1,45 @@
 <script setup>
+const { users } = useAPI();
+
+const loginData = ref({
+  email: "",
+  password: "",
+});
+
+const cookie = useCookie('auth');
+
+const isEnabled = ref(false);
+
+const loginAccount = async () => {
+  try {
+    isEnabled.value = true;
+
+    const { email, password } = loginData.value;
+
+    if (!email || !password) {
+      alert('請確實填寫所有欄位');
+      return;
+    }
+
+    const { data, status } = await users.postUserLogin(loginData.value);
+
+    if (status.value === "success") {
+      // save token
+      cookie.value = data.value.token;
+
+      alert("登入成功");
+      navigateTo(`/user/${data.value.result.name}/profile`);
+    } else {
+      alert('登入失敗');
+    }
+  } catch (e) {
+    console.error('過程中發生錯誤:', e);
+  } finally {
+    loginData.value = {};
+    isEnabled.value = false;
+  }
+};
+
 </script>
 
 <template>
@@ -17,15 +58,15 @@
         <label class="mb-2 text-neutral-0 fw-bold" for="email">
           電子信箱
         </label>
-        <input id="email" class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-          value="jessica@sample.com" placeholder="請輸入信箱" type="email">
+        <input v-model="loginData.email" id="email"
+          class="form-control p-4 text-neutral-100 fw-medium border-neutral-40" placeholder="請輸入信箱" type="email">
       </div>
       <div class="mb-4 fs-8 fs-md-7">
         <label class="mb-2 text-neutral-0 fw-bold" for="password">
           密碼
         </label>
-        <input id="password" class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-          value="jessica@sample.com" placeholder="請輸入密碼" type="password">
+        <input v-model="loginData.password" id="password"
+          class="form-control p-4 text-neutral-100 fw-medium border-neutral-40" placeholder="請輸入密碼" type="password">
       </div>
       <div class="d-flex justify-content-between align-items-center mb-10 fs-8 fs-md-7">
         <div class="form-check d-flex align-items-end gap-2 text-neutral-0">
@@ -38,10 +79,15 @@
           忘記密碼？
         </button>
       </div>
-      <NuxtLink class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold" :to="{
-        name: 'user-userId-profile',
-        params: { userId: 'Jessica' }
-      }">會員登入</NuxtLink>
+      <!-- <NuxtLink
+        class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
+        :to="{
+          name: 'user-userId-profile',
+          params: { userId: 'Jessica' } 
+        }"
+      >會員登入</NuxtLink> -->
+      <button @click.prevent="loginAccount" :disabled="isEnabled"
+        class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold">會員登入</button>
     </form>
 
     <p class="mb-0 fs-8 fs-md-7">

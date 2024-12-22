@@ -2,6 +2,67 @@
 import { Icon } from '@iconify/vue';
 
 const isEmailAndPasswordValid = ref(false);
+
+const { users } = useAPI();
+
+const signupData = ref({
+  name: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  phone: '',
+  birthday: ``,
+  address: {
+    zipcode: '802',
+    detail: ''
+  }
+});
+
+const birth = ref({
+  year: '',
+  month: '',
+  day: ''
+})
+
+const isEnabled = ref(false);
+
+const registerAccount = async () => {
+  try {
+    isEnabled.value = true;
+
+    const { name, email, password, confirmPassword, phone, birthday, address } = signupData.value;
+
+    signupData.value.birthday = `${birth.value.year}/${birth.value.month}/${birth.value.day}`;
+
+    // if (!name || !email || !password || !confirmPassword || !phone || !birthday || !address.zipcode || !address.detail) {
+    //   alert('請確實填寫所有欄位');
+    //   return;
+    // }
+
+    if (password !== confirmPassword) {
+      alert("密碼與確認密碼不一致");
+      password = '';
+      confirmPassword = '';
+      return;
+    }
+
+    const { status } = await users.postUserSignup(signupData.value);
+
+    if (status.value === "success") {
+      alert("註冊成功");
+      navigateTo('/account');
+    } else {
+      alert('註冊失敗');
+    }
+  } catch (e) {
+    console.error('註冊過程中發生錯誤:', e);
+  } finally {
+    signupData.value = {};
+    birth.value = {};
+    isEnabled.value = false;
+  }
+};
+
 </script>
 
 <template>
@@ -45,22 +106,24 @@ const isEmailAndPasswordValid = ref(false);
           <label class="mb-2 text-neutral-0 fw-bold" for="email">
             電子信箱
           </label>
-          <input id="email" class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-            placeholder="hello@exsample.com" type="email">
+          <input v-model="signupData.email" id="email"
+            class="form-control p-4 text-neutral-100 fw-medium border-neutral-40" placeholder="hello@exsample.com"
+            type="email">
         </div>
         <div class="mb-4 fs-8 fs-md-7">
           <label class="mb-2 text-neutral-0 fw-bold" for="password">
             密碼
           </label>
-          <input id="password" class="form-control p-4 text-neutral-100 fw-medium border-neutral-40" placeholder="請輸入密碼"
-            type="password">
+          <input v-model="signupData.password" id="password"
+            class="form-control p-4 text-neutral-100 fw-medium border-neutral-40" placeholder="請輸入密碼" type="password">
         </div>
         <div class="mb-10 fs-8 fs-md-7">
           <label class="mb-2 text-neutral-0 fw-bold" for="confirmPassword">
             確認密碼
           </label>
-          <input id="confirmPassword" class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-            placeholder="請再輸入一次密碼" type="password">
+          <input v-model="signupData.confirmPassword" id="confirmPassword"
+            class="form-control p-4 text-neutral-100 fw-medium border-neutral-40" placeholder="請再輸入一次密碼"
+            type="password">
         </div>
         <button class="btn btn-neutral-40 w-100 py-4 text-neutral-60 fw-bold" type="button"
           @click="isEmailAndPasswordValid = true">
@@ -72,33 +135,35 @@ const isEmailAndPasswordValid = ref(false);
           <label class="mb-2 text-neutral-0 fw-bold" for="name">
             姓名
           </label>
-          <input id="name" class="form-control p-4 text-neutral-100 fw-medium border-neutral-40  rounded-3"
-            placeholder="請輸入姓名" type="text">
+          <input v-model="signupData.name" id="name"
+            class="form-control p-4 text-neutral-100 fw-medium border-neutral-40  rounded-3" placeholder="請輸入姓名"
+            type="text">
         </div>
         <div class="mb-4 fs-8 fs-md-7">
           <label class="mb-2 text-neutral-0 fw-bold" for="phone">
             手機號碼
           </label>
-          <input id="phone" class="form-control p-4 text-neutral-100 fw-medium border-neutral-40  rounded-3"
-            placeholder="請輸入手機號碼" type="tel">
+          <input v-model="signupData.phone" id="phone"
+            class="form-control p-4 text-neutral-100 fw-medium border-neutral-40  rounded-3" placeholder="請輸入手機號碼"
+            type="tel">
         </div>
         <div class="mb-4 fs-8 fs-md-7">
           <label class="mb-2 text-neutral-0 fw-bold" for="birth">
             生日
           </label>
           <div class="d-flex gap-2">
-            <select id="birth" class="form-select p-4 text-neutral-80 fw-medium rounded-3">
-              <option v-for="year in 65" :key="year" value="`${year + 1958} 年`">
+            <select v-model="birth.year" id="birth" class="form-select p-4 text-neutral-80 fw-medium rounded-3">
+              <option v-for="year in 65" :key="year" :value="year + 1958">
                 {{ year + 1958 }} 年
               </option>
             </select>
-            <select class="form-select p-4 text-neutral-80 fw-medium rounded-3">
-              <option v-for="month in 12" :key="month" value="`${month} 月`">
+            <select v-model="birth.month" class="form-select p-4 text-neutral-80 fw-medium rounded-3">
+              <option v-for="month in 12" :key="month" :value="month">
                 {{ month }} 月
               </option>
             </select>
-            <select class="form-select p-4 text-neutral-80 fw-medium rounded-3">
-              <option v-for="day in 30" :key="day" value="`${day} 日`">
+            <select v-model="birth.day" class="form-select p-4 text-neutral-80 fw-medium rounded-3">
+              <option v-for="day in 30" :key="day" :value="day">
                 {{ day }} 日
               </option>
             </select>
@@ -133,7 +198,8 @@ const isEmailAndPasswordValid = ref(false);
                 </option>
               </select>
             </div>
-            <input id="address" type="text" class="form-control p-4 rounded-3" placeholder="請輸入詳細地址">
+            <input v-model="signupData.address.detail" id="address-detail" type="text"
+              class="form-control p-4 rounded-3" placeholder="請輸入詳細地址">
           </div>
         </div>
 
@@ -143,7 +209,8 @@ const isEmailAndPasswordValid = ref(false);
             我已閱讀並同意本網站個資使用規範
           </label>
         </div>
-        <button class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold" type="button">
+        <button @click.prevent="registerAccount" :disabled="isEnabled"
+          class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold" type="button">
           完成註冊
         </button>
       </form>

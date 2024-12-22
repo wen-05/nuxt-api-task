@@ -1,8 +1,10 @@
 <script setup>
-import { ref } from 'vue';
-
+const { users } = useAPI();
+const { data: getUser } = await users.getUser();
 const isEditPassword = ref(false);
 const isEditProfile = ref(false);
+
+const birthformat = getUser.value.result.birthday.split('T')[0].split('-');
 </script>
 
 <template>
@@ -17,9 +19,8 @@ const isEditProfile = ref(false);
             <p class="mb-2 text-neutral-80 fw-medium">
               電子信箱
             </p>
-            <span class="form-control pe-none p-0 text-neutral-100 fw-bold border-0">Jessica@exsample.com</span>
+            <span class="form-control pe-none p-0 text-neutral-100 fw-bold border-0">{{ getUser.result.email }}</span>
           </div>
-
           <div class="d-flex justify-content-between align-items-center" :class="{ 'd-none': isEditPassword }">
             <div>
               <label class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-medium">
@@ -76,7 +77,7 @@ const isEditProfile = ref(false);
             </label>
             <input id="name" name="name" class="form-control text-neutral-100 fw-bold"
               :class="{ 'pe-none p-0 border-0': !isEditProfile, 'p-4': isEditProfile }" type="text"
-              value="Jessica Ｗang">
+              :value="getUser.result.name">
           </div>
 
           <div class="fs-8 fs-md-7">
@@ -87,7 +88,7 @@ const isEditProfile = ref(false);
             </label>
             <input id="phone" name="phone" class="form-control text-neutral-100 fw-bold"
               :class="{ 'pe-none p-0 border-0': !isEditProfile, 'p-4': isEditProfile }" type="tel"
-              value="+886 912 345 678">
+              :value="getUser.result.phone">
           </div>
 
           <div class="fs-8 fs-md-7">
@@ -97,7 +98,8 @@ const isEditProfile = ref(false);
               生日
             </label>
             <span class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
-              :class="{ 'd-none': isEditProfile }">1990 年 8 月 15 日</span>
+              :class="{ 'd-none': isEditProfile }">{{ `${birthformat[0]} 年 ${birthformat[1]} 月 ${birthformat[2]} 日 `
+              }}</span>
             <div class="d-flex gap-2" :class="{ 'd-none': !isEditProfile }">
               <select id="birth" class="form-select p-4 text-neutral-80 fw-medium rounded-3">
                 <option v-for="year in 65" :key="year" value="`${year + 1958} 年`">

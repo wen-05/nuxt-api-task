@@ -2,6 +2,13 @@
 import { Icon } from '@iconify/vue';
 import { useRoute } from 'vue-router';
 
+definePageMeta({
+  middleware: ['auth']
+})
+
+const { rooms, users } = useAPI();
+// const { data: room } = await rooms.getRoomItem(roomId);
+
 const route = useRoute();
 const { bookingId } = route.params;
 

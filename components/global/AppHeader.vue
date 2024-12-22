@@ -13,6 +13,13 @@ const handleScroll = () => {
   isScrolled.value = window.scrollY > 50;
 }
 
+const token = useCookie('auth');
+
+const signOut = () => {
+  token.value = null;
+  navigateTo('/account');
+}
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
 })
@@ -53,7 +60,7 @@ onUnmounted(() => {
               <div class="btn-group">
                 <button type="button" class="nav-link d-flex gap-2 p-4 text-neutral-0" data-bs-toggle="dropdown">
                   <Icon class="fs-5" icon="mdi:account-circle-outline" />
-                  Jessica
+                  會員
                 </button>
                 <ul class="dropdown-menu py-3 overflow-hidden" style="right: 0; left: auto; border-radius: 20px;">
                   <li>
@@ -63,7 +70,7 @@ onUnmounted(() => {
                     }">我的帳戶</NuxtLink>
                   </li>
                   <li>
-                    <a class="dropdown-item px-6 py-4" href="/account">登出</a>
+                    <a class="dropdown-item px-6 py-4" @click.prevent="signOut">登出</a>
                   </li>
                 </ul>
               </div>

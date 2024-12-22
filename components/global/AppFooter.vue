@@ -4,7 +4,7 @@ import { Icon } from '@iconify/vue';
 
 <template>
   <footer class="py-20 pb-md-30 bg-neutral-120">
-    <div class="containFer">
+    <div class="container">
       <div
         class="d-flex flex-column gap-10 gap-md-0 flex-md-row justify-content-md-between align-items-md-center mb-20">
         <div>
