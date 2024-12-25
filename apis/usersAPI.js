@@ -26,12 +26,10 @@ export const usersAPI = () => {
   );
 
 
-  const updateUser = (payload) => useAsyncData(`updateUser`, () =>
-    $api('user', {
-      method: 'PUT',
-      body: payload
-    })
-  );
+  const updateUser = (payload) => $api('user', {
+    method: 'PUT',
+    body: payload
+  });
 
   return {
     getUser,

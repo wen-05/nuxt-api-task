@@ -5,6 +5,60 @@ const isEditPassword = ref(false);
 const isEditProfile = ref(false);
 
 const birthformat = getUser.value.result.birthday.split('T')[0].split('-');
+const birthDate = birthformat.join('/');
+
+const editPassword = ref({
+  oldPassword: "",
+  newPassword: "",
+  checkNewPassword: ""
+});
+
+const updataPassword = async () => {
+  if (editPassword.value.newPassword !== editPassword.value.checkNewPassword) {
+    alert("密碼不一致");
+    return;
+  }
+
+  const { _id, name, phone, address } = getUser.value.result;
+
+  const payload = {
+    "userId": _id,
+    "name": name,
+    "phone": phone,
+    "birthday": birthDate,
+    "address": address,
+    "oldPassword": editPassword.value.oldPassword,
+    "newPassword": editPassword.value.newPassword
+  }
+
+  try {
+    const res = await users.updateUser(payload);
+    alert("密碼更新成功");
+    // window.location.reload();
+  } catch (err) {
+    console.log(err.message);
+  }
+}
+
+const updateUserInfo = async () => {
+  const { _id, name, phone, address } = getUser.value.result;
+  
+  const payload = {
+    "userId": _id,
+    "name": name,
+    "phone": phone,
+    "birthday": birthDate,
+    "address": address,
+  }
+
+  try {
+    const res = await users.updateUser(payload);
+    alert("資料更新成功");
+    window.location.reload();
+  } catch (err) {
+    console.log(err.message);
+  }
+}
 </script>
 
 <template>
@@ -40,23 +94,26 @@ const birthformat = getUser.value.result.birthday.split('T')[0].split('-');
           <div class="d-flex flex-column gap-4 gap-md-6" :class="{ 'd-none': !isEditPassword }">
             <div>
               <label for="oldPassword" class="form-label fs-8 fs-md-7 fw-bold">舊密碼</label>
-              <input id="oldPassword" type="password" class="form-control p-4 fs-7 rounded-3" placeholder="請輸入舊密碼">
+              <input v-model="editPassword.oldPassword" id="oldPassword" type="password"
+                class="form-control p-4 fs-7 rounded-3" placeholder="請輸入舊密碼">
             </div>
 
             <div>
               <label for="newPassword" class="form-label fs-8 fs-md-7 fw-bold">新密碼</label>
-              <input id="newPassword" type="password" class="form-control p-4 fs-7 rounded-3" placeholder="請輸入新密碼">
+              <input v-model="editPassword.newPassword" id="newPassword" type="password"
+                class="form-control p-4 fs-7 rounded-3" placeholder="請輸入新密碼">
             </div>
 
             <div>
               <label for="confirmPassword" class="form-label fs-8 fs-md-7 fw-bold">確認新密碼</label>
-              <input id="confirmPassword" type="password" class="form-control p-4 fs-7 rounded-3"
-                placeholder="請再輸入一次新密碼">
+              <input v-model="editPassword.checkNewPassword" id="confirmPassword" type="password"
+                class="form-control p-4 fs-7 rounded-3" placeholder="請再輸入一次新密碼">
             </div>
           </div>
 
           <button :class="{ 'd-none': !isEditPassword }"
-            class="btn btn-neutral-40 align-self-md-start px-8 py-4 text-neutral-60 rounded-3" type="button">
+            class="btn btn-neutral-40 align-self-md-start px-8 py-4 text-neutral-60 rounded-3" type="button"
+            @click="updataPassword">
             儲存設定
           </button>
         </div>
@@ -77,7 +134,7 @@ const birthformat = getUser.value.result.birthday.split('T')[0].split('-');
             </label>
             <input id="name" name="name" class="form-control text-neutral-100 fw-bold"
               :class="{ 'pe-none p-0 border-0': !isEditProfile, 'p-4': isEditProfile }" type="text"
-              :value="getUser.result.name">
+              v-model="getUser.result.name">
           </div>
 
           <div class="fs-8 fs-md-7">
@@ -88,7 +145,7 @@ const birthformat = getUser.value.result.birthday.split('T')[0].split('-');
             </label>
             <input id="phone" name="phone" class="form-control text-neutral-100 fw-bold"
               :class="{ 'pe-none p-0 border-0': !isEditProfile, 'p-4': isEditProfile }" type="tel"
-              :value="getUser.result.phone">
+              v-model="getUser.result.phone">
           </div>
 
           <div class="fs-8 fs-md-7">
@@ -126,7 +183,7 @@ const birthformat = getUser.value.result.birthday.split('T')[0].split('-');
               地址
             </label>
             <span class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
-              :class="{ 'd-none': isEditProfile }">高雄市新興區六角路 123 號</span>
+              :class="{ 'd-none': isEditProfile }">高雄市新興區{{ getUser.result.address.detail }}</span>
             <div :class="{ 'd-none': !isEditProfile }">
               <div class="d-flex gap-2 mb-2">
                 <select class="form-select p-4 text-neutral-80 fw-medium rounded-3">
@@ -152,7 +209,8 @@ const birthformat = getUser.value.result.birthday.split('T')[0].split('-');
                   </option>
                 </select>
               </div>
-              <input id="address" type="text" class="form-control p-4 rounded-3" placeholder="請輸入詳細地址">
+              <input id="address" type="text" class="form-control p-4 rounded-3" placeholder="請輸入詳細地址"
+                v-model="getUser.result.address.detail">
             </div>
           </div>
         </div>
@@ -163,7 +221,8 @@ const birthformat = getUser.value.result.birthday.split('T')[0].split('-');
         </button>
 
         <button :class="{ 'd-none': !isEditProfile }"
-          class="btn btn-neutral-40 align-self-md-start px-8 py-4 text-neutral-60 rounded-3" type="button">
+          class="btn btn-neutral-40 align-self-md-start px-8 py-4 text-neutral-60 rounded-3" type="button"
+          @click="updateUserInfo">
           儲存設定
         </button>
       </section>
