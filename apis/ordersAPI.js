@@ -7,18 +7,14 @@ export const ordersAPI = () => {
     $api(`/orders/${id}`)
   );
 
-  const createOrder = (payload) => useAsyncData('createOrder', () =>
-    $api('/orders', {
-      method: 'POST',
-      body: payload
-    })
-  );
+  const createOrder = (payload) => $api('/orders', {
+    method: 'POST',
+    body: payload
+  });
 
-  const deleteOrderItem = (id) => useAsyncData(`deleteOrder-${id}`, () =>
-    $api(`/orders/${id}`, {
-      method: 'DELETE'
-    })
-  );
+  const deleteOrderItem = (id) => $api(`/orders/${id}`, {
+    method: 'DELETE'
+  });
 
   return {
     getOrders,

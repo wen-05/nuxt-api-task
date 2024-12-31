@@ -252,8 +252,20 @@ const handleDateChange = (bookingInfo) => {
               <h5 class="mb-0 text-primary-100 fw-bold">
                 NT$ {{ room?.result.price }}
               </h5>
-              <NuxtLink :to="{ name: 'rooms-roomId-booking', params: { roomId: $route.params.roomId } }"
+              <!-- <NuxtLink :to="{ name: 'rooms-roomId-booking', params: { roomId: $route.params.roomId } }"
                 class="btn btn-primary-100 py-4 text-neutral-0 fw-bold rounded-3">
+                立即預訂
+              </NuxtLink> -->
+              <NuxtLink :to="{
+                name: 'rooms-roomId-booking',
+                params: { roomId: $route.params.roomId },
+                query: {
+                  checkInDate: bookingDate.date.start,
+                  checkOutDate: bookingDate.date.end,
+                  daysCount: daysCount,
+                  bookingPeople: bookingPeople
+                }
+              }" class="btn btn-primary-100 py-4 text-neutral-0 fw-bold rounded-3">
                 立即預訂
               </NuxtLink>
             </div>
@@ -277,8 +289,10 @@ const handleDateChange = (bookingInfo) => {
             <span class="text-neutral fs-9 fw-medium text-decoration-underline">{{
               daysFormatOnMobile(bookingDate.date?.start) }} - {{ daysFormatOnMobile(bookingDate.date?.end) }}</span>
           </div>
-          <NuxtLink :to="{ name: 'rooms-roomId-booking', params: { roomId: $route.params.roomId } }"
-            class="btn btn-primary-100 px-12 py-4 text-neutral-0 fw-bold rounded-3">
+          <NuxtLink :to="{
+            name: 'rooms-roomId-booking',
+            params: { roomId: $route.params.roomId }
+          }" class="btn btn-primary-100 px-12 py-4 text-neutral-0 fw-bold rounded-3">
             立即預訂
           </NuxtLink>
         </template>

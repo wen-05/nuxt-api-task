@@ -9,7 +9,14 @@ definePageMeta({
 const route = useRoute();
 const roomId = route.params.roomId;
 
-const { rooms, users } = useAPI();
+const bookingInfo = {
+  checkInDate: route.query.checkInDate,
+  checkOutDate: route.query.checkOutDate,
+  daysCount: route.query.daysCount,
+  bookingPeople: route.query.bookingPeople
+}
+
+const { orders, rooms, users } = useAPI();
 const { data: room } = await rooms.getRoomItem(roomId);
 
 const formData = ref({
@@ -40,18 +47,49 @@ const goBack = () => {
 }
 const isLoading = ref(false);
 
-const confirmBooking = () => {
-  isLoading.value = true;
+const isEnabled = ref(false);
 
-  setTimeout(() => {
-    isLoading.value = false;
-    router.push({
-      name: 'booking-confirmation-bookingId',
-      params: {
-        bookingId: 'HH2302183151222'
+const confirmBooking = async () => {
+  try {
+    isLoading.value = true;
+    isEnabled.value = true;
+
+    const orderData = ref({
+      "roomId": roomId,
+      "checkInDate": bookingInfo.checkInDate,
+      "checkOutDate": bookingInfo.checkOutDate,
+      "peopleNum": bookingInfo.bookingPeople,
+      "userInfo": {
+        "address": {
+          "zipcode": 802,
+          "detail": formData.value.address.detail
+        },
+        "name": formData.value.name,
+        "phone": formData.value.phone,
+        "email": formData.value.email
       }
-    })
-  }, 1500);
+    });
+    const { status, result } = await orders.createOrder(orderData.value);
+    if (status.value === "success") {
+      alert("訂單完成");
+      setTimeout(() => {
+        isLoading.value = false;
+        router.push({
+          name: 'booking-confirmation-bookingId',
+          params: {
+            bookingId: result._id
+          }
+        })
+      }, 1500);
+    } else {
+      alert('訂單失敗');
+    }
+  } catch (e) {
+    console.error('預定過程中發生錯誤:', e);
+  } finally {
+    isLoading.value = false;
+    isEnabled.value = false;
+  }
 }
 
 </script>
@@ -93,10 +131,10 @@ const confirmBooking = () => {
                       訂房日期
                     </h3>
                     <p class="mb-2 fw-medium">
-                      入住：12 月 4 日星期二
+                      入住：{{ bookingInfo.checkInDate }}
                     </p>
                     <p class="mb-0 fw-medium">
-                      退房：12 月 6 日星期三
+                      退房：{{ bookingInfo.checkOutDate }}
                     </p>
                   </div>
                   <button class="bg-transparent border-0 fw-bold text-decoration-underline" type="button">
@@ -109,7 +147,7 @@ const confirmBooking = () => {
                       房客人數
                     </h3>
                     <p class="mb-0 fw-medium">
-                      2 人
+                      {{ bookingInfo.bookingPeople }} 人
                     </p>
                   </div>
                   <button class="bg-transparent border-0 fw-bold text-decoration-underline" type="button">
@@ -279,7 +317,7 @@ const confirmBooking = () => {
                     <span class="text-neutral-80">2 晚</span>
                   </div>
                   <span class="fw-medium">
-                    NT$ {{ room?.result.price * 2}}
+                    NT$ {{ room?.result.price * 2 }}
                   </span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center fw-medium">
@@ -301,8 +339,8 @@ const confirmBooking = () => {
                 </div>
               </div>
 
-              <button class="btn btn-primary-100 py-4 text-neutral-0 fw-bold rounded-3" type="button"
-                @click="confirmBooking">
+              <button :disabled="isEnabled" class="btn btn-primary-100 py-4 text-neutral-0 fw-bold rounded-3"
+                type="button" @click="confirmBooking">
                 確認訂房
               </button>
             </div>
