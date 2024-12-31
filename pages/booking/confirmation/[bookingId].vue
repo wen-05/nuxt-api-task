@@ -85,12 +85,12 @@ const { data: getOrderItem } = await orders.getOrderItem(bookingId);
               </h2>
             </div>
 
-            <img class="img-fluid rounded-3" src="/images/room-a-1.png" alt="room-a">
+            <img class="img-fluid rounded-3" :src="getOrderItem?.result.roomId.imageUrl" :alt="getOrderItem?.result.roomId.name">
 
             <section class="d-flex flex-column gap-6">
               <h3 class="d-flex align-items-center mb-6 text-neutral-80 fs-8 fs-md-6 fw-bold">
                 <p class="mb-0">
-                  {{ getOrderItem?.result.roomId.name }}，1 晚
+                  {{ getOrderItem?.result.roomId.name }}，? 晚
                 </p>
                 <span class="d-inline-block mx-4 bg-neutral-80" style="width: 1px;height: 18px;" />
                 <p class="mb-0">

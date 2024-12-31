@@ -6,6 +6,8 @@ const roomId = 'a';  // for navigation demo
 const { orders } = useAPI();
 const { data: getOrders } = await orders.getOrders();
 // const { data: getOrderItem } = await orders.getOrderItem(Id);
+console.log(getOrders);
+
 
 const isEnabled = ref(false);
 const cancel = async () => {
@@ -41,12 +43,12 @@ const cancel = async () => {
           </h2>
         </div>
 
-        <img class="img-fluid rounded-3" src="/images/room-a-1.png" alt="room-a">
+        <img class="img-fluid rounded-3" :src="getOrders?.result[getOrders?.result.length - 1].roomId.imageUrl" :alt="getOrders?.result[getOrders?.result.length - 1].roomId.name">
 
         <section class="d-flex flex-column gap-6">
           <h3 class="d-flex align-items-center mb-0 text-neutral-80 fs-8 fs-md-6 fw-bold">
             <p class="mb-0">
-              {{ getOrders?.result[getOrders?.result.length - 1].roomId.name }}，1 晚
+              {{ getOrders?.result[getOrders?.result.length - 1].roomId.name }}，? 晚
             </p>
             <span class="d-inline-block mx-4 bg-neutral-80" style="width: 1px;height: 18px;" />
             <p class="mb-0">
@@ -64,8 +66,7 @@ const cancel = async () => {
           </div>
 
           <p class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-bold">
-            NT$ {{ getOrders?.result[getOrders?.result.length - 1].roomId.price *
-              getOrders?.result[getOrders?.result.length - 1].peopleNum }}
+            NT$ {{ getOrders?.result[getOrders?.result.length - 1].roomId.price * 1 }}
           </p>
         </section>
 
@@ -139,7 +140,7 @@ const cancel = async () => {
 
             <div class="text-neutral-80 fw-medium">
               <p class="mb-2">
-                住宿天數： 1 晚
+                住宿天數： ? 晚
               </p>
               <p class="mb-0">
                 住宿人數：{{ item.peopleNum }} 位

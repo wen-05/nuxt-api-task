@@ -70,7 +70,7 @@ const confirmBooking = async () => {
       }
     });
     const { status, result } = await orders.createOrder(orderData.value);
-    if (status.value === "success") {
+    if (status === true) {
       alert("訂單完成");
       setTimeout(() => {
         isLoading.value = false;
@@ -304,7 +304,7 @@ const confirmBooking = async () => {
           <div class="col-12 col-md-5">
             <div
               class="confirm-form rounded-3xl d-flex flex-column gap-10 p-6 p-md-10 mx-auto ms-md-auto me-md-0 bg-neutral-0">
-              <img class="img-fluid rounded-3" src="/images/room-a-1.png" alt="room-a">
+              <img class="img-fluid rounded-3" :src="room?.result.imageUrl" :alt="room?.result.name">
 
               <div>
                 <h2 className="mb-6 text-neutral-100 fs-6 fs-md-4 fw-bold">
